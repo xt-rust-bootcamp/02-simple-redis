@@ -39,7 +39,7 @@ pub enum RespError {
 }
 
 #[enum_dispatch(RespEncode)]
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum RespFrame {
     SimpleString(SimpleString),
     Error(SimpleError),
@@ -55,32 +55,32 @@ pub enum RespFrame {
     Set(RespSet),
 }
 
-#[derive(Debug, PartialEq)]
-pub struct SimpleString(String);
+#[derive(Debug, Clone, PartialEq)]
+pub struct SimpleString(pub(crate) String);
 
-#[derive(Debug, PartialEq)]
-pub struct SimpleError(String);
+#[derive(Debug, Clone, PartialEq)]
+pub struct SimpleError(pub(crate) String);
 
-#[derive(Debug, PartialEq)]
-pub struct BulkString(Vec<u8>);
+#[derive(Debug, Clone, PartialEq)]
+pub struct BulkString(pub(crate) Vec<u8>);
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct RespNull;
 
-#[derive(Debug, PartialEq)]
-pub struct RespArray(Vec<RespFrame>);
+#[derive(Debug, Clone, PartialEq)]
+pub struct RespArray(pub(crate) Vec<RespFrame>);
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct RespNullArray;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct RespNullBulkString;
 
-#[derive(Debug, PartialEq)]
-pub struct RespMap(BTreeMap<String, RespFrame>);
+#[derive(Debug, Clone, PartialEq)]
+pub struct RespMap(pub(crate) BTreeMap<String, RespFrame>);
 
-#[derive(Debug, PartialEq)]
-pub struct RespSet(Vec<RespFrame>);
+#[derive(Debug, Clone, PartialEq)]
+pub struct RespSet(pub(crate) Vec<RespFrame>);
 
 impl Deref for SimpleString {
     type Target = String;
@@ -187,5 +187,23 @@ impl From<&[u8]> for RespFrame {
 impl<const N: usize> From<&[u8; N]> for RespFrame {
     fn from(s: &[u8; N]) -> Self {
         BulkString(s.to_vec()).into()
+    }
+}
+
+impl<const N: usize> From<&[u8; N]> for BulkString {
+    fn from(s: &[u8; N]) -> Self {
+        BulkString(s.to_vec())
+    }
+}
+
+impl AsRef<[u8]> for BulkString {
+    fn as_ref(&self) -> &[u8] {
+        &self.0
+    }
+}
+
+impl AsRef<str> for SimpleString {
+    fn as_ref(&self) -> &str {
+        &self.0
     }
 }
