@@ -1,16 +1,15 @@
-use std::{ops::Deref, sync::Arc};
-
-use dashmap::DashMap;
-
 use crate::RespFrame;
+use dashmap::DashMap;
+use std::ops::Deref;
+use std::sync::Arc;
 
 #[derive(Debug, Clone)]
 pub struct Backend(Arc<BackendInner>);
 
 #[derive(Debug)]
 pub struct BackendInner {
-    map: DashMap<String, RespFrame>,
-    hmap: DashMap<String, DashMap<String, RespFrame>>,
+    pub(crate) map: DashMap<String, RespFrame>,
+    pub(crate) hmap: DashMap<String, DashMap<String, RespFrame>>,
 }
 
 impl Deref for Backend {
