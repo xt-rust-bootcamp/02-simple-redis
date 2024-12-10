@@ -87,6 +87,12 @@ impl AsRef<[u8]> for BulkString {
     }
 }
 
+impl From<String> for BulkString {
+    fn from(s: String) -> Self {
+        BulkString(s.into_bytes())
+    }
+}
+
 #[cfg(test)]
 mod tests {
 
